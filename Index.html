@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>De Myshhpati</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #05020a;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    /* Fondo de Galaxia / Nebulosa */
+    canvas#space {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* Título de Myshhpati */
+    .title-container {
+      position: absolute;
+      top: 8%;
+      z-index: 10;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #fff7d6;
+      text-shadow: 
+        0 0 10px #ffe600,
+        0 0 20px #ffb700,
+        0 0 40px #ffaa00,
+        0 0 80px #ff8800;
+      animation: pulseTitle 3s ease-in-out infinite alternate;
+    }
+
+    p.subtitle {
+      font-size: 1.1rem;
+      margin-top: 8px;
+      color: #e2d5ff;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+      font-style: italic;
+    }
+
+    @keyframes pulseTitle {
+      0% {
+        transform: scale(0.98);
+        opacity: 0.85;
+      }
+      100% {
+        transform: scale(1.03);
+        opacity: 1;
+      }
+    }
+
+    /* Estrella Central */
+    .center-star-container {
+      position: absolute;
+      z-index: 5;
+      width: 160px;
+      height: 160px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .glow-bg {
+      position: absolute;
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,223,0,0.8) 0%, rgba(255,140,0,0.4) 40%, rgba(0,0,0,0) 70%);
+      animation: glowPulse 2.5s ease-in-out infinite alternate;
+    }
+
+    .star-shape {
+      width: 120px;
+      height: 120px;
+      background: #ffffff;
+      clip-path: polygon(
+        50% 0%, 61% 35%, 98% 35%, 68% 57%, 
+        79% 91%, 50% 70%, 21% 91%, 32% 57%, 
+        2% 35%, 39% 35%
+      );
+      box-shadow: 0 0 50px #ffea00;
+      filter: drop-shadow(0px 0px 20px #ffea00);
+      animation: rotateStar 20s linear infinite;
+    }
+
+    @keyframes glowPulse {
+      0% { transform: scale(0.85); opacity: 0.7; }
+      100% { transform: scale(1.25); opacity: 1; }
+    }
+
+    @keyframes rotateStar {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Contenedor de Flores Amarillas */
+    #flower-field {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .yellow-flower {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      animation: floatAround 12s ease-in-out infinite alternate;
+    }
+
+    .petal {
+      position: absolute;
+      width: 14px;
+      height: 22px;
+      background: linear-gradient(to top, #ffe600, #fff7a1);
+      border-radius: 50%;
+      top: 9px;
+      left: 13px;
+      transform-origin: center bottom;
+      box-shadow: 0 0 6px rgba(255, 230, 0, 0.8);
+    }
+
+    .petal:nth-child(1) { transform: rotate(0deg) translateY(-10px); }
+    .petal:nth-child(2) { transform: rotate(60deg) translateY(-10px); }
+    .petal:nth-child(3) { transform: rotate(120deg) translateY(-10px); }
+    .petal:nth-child(4) { transform: rotate(180deg) translateY(-10px); }
+    .petal:nth-child(5) { transform: rotate(240deg) translateY(-10px); }
+    .petal:nth-child(6) { transform: rotate(300deg) translateY(-10px); }
+
+    .flower-center {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: #e67e22;
+      border-radius: 50%;
+      top: 14px;
+      left: 14px;
+      box-shadow: 0 0 4px #d35400;
+    }
+
+    @keyframes floatAround {
+      0% {
+        transform: translate(0, 0) rotate(0deg) scale(0.8);
+      }
+      50% {
+        transform: translate(30px, -40px) rotate(180deg) scale(1.1);
+      }
+      100% {
+        transform: translate(-20px, 30px) rotate(360deg) scale(0.9);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Canvas para la nebulosa y las estrellas -->
+  <canvas id="space"></canvas>
+
+  <!-- Título -->
+  <div class="title-container">
+    <h1>De Myshhpati</h1>
+    <p class="subtitle">Un universo de flores y estrellas para ti</p>
+  </div>
+
+  <!-- Estrella Central -->
+  <div class="center-star-container">
+    <div class="glow-bg"></div>
+    <div class="star-shape"></div>
+  </div>
+
+  <!-- Flores Amarillas Orbitando / Flotando -->
+  <div id="flower-field"></div>
+
+  <script>
+    // --- Canvas Nebulosa & Estrellas ---
+    const canvas = document.getElementById('space');
+    const ctx = canvas.getContext('2d');
+
+    let width, height;
+    let stars = [];
+    let nebulaParticles = [];
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Crear Estrellas
+    for (let i = 0; i < 200; i++) {
+      stars.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 1.8,
+        alpha: Math.random(),
+        speed: Math.random() * 0.02 + 0.005
+      });
+    }
+
+    // Crear Partículas de Nebulosa (Púrpura, Azul, Rosado)
+    const colors = ['rgba(138, 43, 226, ', 'rgba(75, 0, 130, ', 'rgba(255, 20, 147, ', 'rgba(0, 191, 255, '];
+    for (let i = 0; i < 45; i++) {
+      nebulaParticles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 150 + 100,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        alpha: Math.random() * 0.15 + 0.05,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3
+      });
+    }
+
+    function animateSpace() {
+      ctx.clearRect(0, 0, width, height);
+
+      // Dibujar Nebulosa
+      nebulaParticles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < -p.radius) p.x = width + p.radius;
+        if (p.x > width + p.radius) p.x = -p.radius;
+        if (p.y < -p.radius) p.y = height + p.radius;
+        if (p.y > height + p.radius) p.y = -p.radius;
+
+        let grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius);
+        grad.addColorStop(0, p.color + p.alpha + ')');
+        grad.addColorStop(1, p.color + '0)');
+
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Dibujar Estrellas
+      stars.forEach(s => {
+        s.alpha += s.speed;
+        if (s.alpha > 1 || s.alpha < 0) s.speed = -s.speed;
+
+        ctx.fillStyle = `rgba(255, 255, 255, ${Math.abs(s.alpha)})`;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      requestAnimationFrame(animateSpace);
+    }
+
+    animateSpace();
+
+    // --- Generador de Flores Amarillas ---
+    const flowerField = document.getElementById('flower-field');
+    const totalFlowers = 24;
+
+    for (let i = 0; i < totalFlowers; i++) {
+      const flower = document.createElement('div');
+      flower.className = 'yellow-flower';
+
+      // Posición aleatoria alrededor de la pantalla
+      const posX = Math.random() * 90 + 5; // %
+      const posY = Math.random() * 90 + 5; // %
+      const duration = Math.random() * 8 + 8; // s
+      const delay = Math.random() * 5; // s
+
+      flower.style.left = `${posX}%`;
+      flower.style.top = `${posY}%`;
+      flower.style.animationDuration = `${duration}s`;
+      flower.style.animationDelay = `-${delay}s`;
+
+      // Crear pétalos y centro
+      for (let j = 0; j < 6; j++) {
+        const petal = document.createElement('div');
+        petal.className = 'petal';
+        flower.appendChild(petal);
+      }
+      const center = document.createElement('div');
+      center.className = 'flower-center';
+      flower.appendChild(center);
+
+      flowerField.appendChild(flower);
+    }
+  </script>
+</body>
+</html>
